@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      financial_goals: {
+        Row: {
+          created_at: string | null
+          current_amount: number | null
+          id: string
+          name: string
+          target_amount: number | null
+          target_years: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_amount?: number | null
+          id?: string
+          name: string
+          target_amount?: number | null
+          target_years?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_amount?: number | null
+          id?: string
+          name?: string
+          target_amount?: number | null
+          target_years?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          age: number | null
+          city: string | null
+          created_at: string | null
+          debt_investments: number | null
+          equity: number | null
+          gold: number | null
+          health_insurance: number | null
+          id: string
+          life_insurance: number | null
+          monthly_emi: number | null
+          monthly_expenses: number | null
+          monthly_income: number | null
+          name: string | null
+          nps: number | null
+          onboarding_complete: boolean | null
+          pf_ppf: number | null
+          total_debt: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          age?: number | null
+          city?: string | null
+          created_at?: string | null
+          debt_investments?: number | null
+          equity?: number | null
+          gold?: number | null
+          health_insurance?: number | null
+          id: string
+          life_insurance?: number | null
+          monthly_emi?: number | null
+          monthly_expenses?: number | null
+          monthly_income?: number | null
+          name?: string | null
+          nps?: number | null
+          onboarding_complete?: boolean | null
+          pf_ppf?: number | null
+          total_debt?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: number | null
+          city?: string | null
+          created_at?: string | null
+          debt_investments?: number | null
+          equity?: number | null
+          gold?: number | null
+          health_insurance?: number | null
+          id?: string
+          life_insurance?: number | null
+          monthly_emi?: number | null
+          monthly_expenses?: number | null
+          monthly_income?: number | null
+          name?: string | null
+          nps?: number | null
+          onboarding_complete?: boolean | null
+          pf_ppf?: number | null
+          total_debt?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
