@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Navbar } from "@/components/Navbar";
+import Ballpit from "@/component/Ballpit";
 import { Flame, Heart, Calendar, Calculator, Users, PieChart, ArrowRight, Star, Shield, TrendingUp } from "lucide-react";
 
 const features = [
@@ -23,8 +24,22 @@ export default function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen gradient-navy">
-      <Navbar />
+    <div className="min-h-screen gradient-navy relative">
+      {/* Ballpit Background */}
+      <div className="fixed inset-0 z-0">
+        <Ballpit 
+          className="opacity-60"
+          followCursor={true}
+          colors={[0x1a1a2e, 0x16213e, 0x0f3460]}
+          count={100}
+          maxSize={0.8}
+          minSize={0.3}
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <Navbar />
 
       {/* Hero */}
       <section className="container pt-20 pb-24 text-center">
@@ -133,6 +148,7 @@ export default function LandingPage() {
           <p className="mt-2">© 2025 AI Money Mentor. All rights reserved.</p>
         </div>
       </footer>
+      </div>
     </div>
   );
 }

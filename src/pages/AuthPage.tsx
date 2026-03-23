@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import Plasma from "@/component/Plasma";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 
 export default function AuthPage() {
@@ -27,7 +28,9 @@ export default function AuthPage() {
       } else {
         const { error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
         if (error) throw error;
-        toast.success("Account created! Please check your email to verify.");
+        toast.success("Account created successfully!");
+        // Auto-navigate to onboarding after successful signup
+        setTimeout(() => navigate("/onboarding"), 1000);
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -37,8 +40,23 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-navy flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen gradient-navy relative">
+      {/* Plasma Background */}
+      <div className="fixed inset-0 z-0">
+        <Plasma 
+          color="#3b82f6"
+          speed={1.5}
+          direction="forward"
+          scale={1.2}
+          opacity={0.4}
+          mouseInteractive={true}
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="w-full max-w-md space-y-8 p-4">
         <div className="text-center">
           <div className="w-14 h-14 rounded-xl gradient-gold flex items-center justify-center mx-auto mb-4">
             <span className="text-primary-foreground font-heading font-bold text-2xl">₹</span>
@@ -78,6 +96,8 @@ export default function AuthPage() {
             {isLogin ? "Sign up" : "Sign in"}
           </button>
         </p>
+      </div>
+        </div>
       </div>
     </div>
   );

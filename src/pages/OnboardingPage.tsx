@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import Plasma from "@/component/Plasma";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 const steps = ["Personal Info", "Income & Expenses", "Investments", "Debt & Insurance", "Goals"];
@@ -154,8 +155,23 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-navy flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg space-y-6">
+    <div className="min-h-screen gradient-navy relative">
+      {/* Plasma Background */}
+      <div className="fixed inset-0 z-0">
+        <Plasma 
+          color="#3b82f6"
+          speed={1.2}
+          direction="forward"
+          scale={1.0}
+          opacity={0.3}
+          mouseInteractive={true}
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="min-h-screen flex items-center justify-center py-12">
+          <div className="w-full max-w-lg space-y-6 p-4">
         <div className="text-center">
           <h1 className="font-heading text-3xl font-bold text-foreground">Let's Know You Better</h1>
           <p className="text-muted-foreground mt-2">Step {step + 1} of {steps.length}: {steps[step]}</p>
@@ -185,6 +201,8 @@ export default function OnboardingPage() {
               {loading ? "Saving..." : "Complete Setup"} <Check className="ml-2 w-4 h-4" />
             </Button>
           )}
+        </div>
+      </div>
         </div>
       </div>
     </div>

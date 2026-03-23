@@ -6,6 +6,7 @@ import { ScoreRing } from "@/components/ScoreRing";
 import { InsightCard } from "@/components/InsightCard";
 import { AITypingIndicator } from "@/components/AITypingIndicator";
 import { Button } from "@/components/ui/button";
+import Galaxy from "@/component/Galaxy";
 import { RefreshCw } from "lucide-react";
 
 interface DimensionScore {
@@ -93,9 +94,24 @@ export default function MoneyHealthPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-navy">
-      <Navbar isAuthenticated />
-      <div className="container py-8 space-y-8 max-w-4xl">
+    <div className="min-h-screen gradient-navy relative">
+      {/* Galaxy Background */}
+      <div className="fixed inset-0 z-0">
+        <Galaxy 
+          transparent={true}
+          mouseInteraction={true}
+          hueShift={200}
+          density={0.6}
+          glowIntensity={0.15}
+          twinkleIntensity={0.3}
+          speed={0.4}
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <Navbar isAuthenticated />
+        <div className="container py-8 space-y-8 max-w-4xl">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-heading text-3xl font-bold text-foreground">Money Health Score</h1>
@@ -161,6 +177,7 @@ export default function MoneyHealthPage() {
         <p className="text-xs text-muted-foreground text-center">
           This assessment is for educational purposes. Please consult a SEBI-registered advisor for personalized advice.
         </p>
+        </div>
       </div>
     </div>
   );

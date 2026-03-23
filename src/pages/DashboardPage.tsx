@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { ScoreRing } from "@/components/ScoreRing";
 import { GoalCard } from "@/components/GoalCard";
 import { FeatureCard } from "@/components/FeatureCard";
+import Galaxy from "@/component/Galaxy";
 import { formatINR } from "@/lib/format";
 import { Flame, Heart, Calendar, Calculator, Users, PieChart, TrendingUp, Wallet } from "lucide-react";
 
@@ -62,9 +63,24 @@ export default function DashboardPage() {
   ), 100);
 
   return (
-    <div className="min-h-screen gradient-navy">
-      <Navbar isAuthenticated />
-      <div className="container py-8 space-y-8">
+    <div className="min-h-screen gradient-navy relative">
+      {/* Galaxy Background */}
+      <div className="fixed inset-0 z-0">
+        <Galaxy 
+          transparent={true}
+          mouseInteraction={true}
+          hueShift={220}
+          density={0.8}
+          glowIntensity={0.2}
+          twinkleIntensity={0.4}
+          speed={0.5}
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <Navbar isAuthenticated />
+        <div className="container py-8 space-y-8">
         {/* Welcome */}
         <div>
           <h1 className="font-heading text-3xl font-bold text-foreground">
@@ -159,6 +175,7 @@ export default function DashboardPage() {
               <FeatureCard key={m.title} icon={m.icon} title={m.title} description={m.desc} onClick={() => navigate(m.path)} />
             ))}
           </div>
+        </div>
         </div>
       </div>
     </div>

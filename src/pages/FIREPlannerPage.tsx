@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatINR } from "@/lib/format";
+import Galaxy from "@/component/Galaxy";
 import { Flame, ArrowRight } from "lucide-react";
 
 interface FIREResult {
@@ -97,9 +98,24 @@ export default function FIREPlannerPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-navy">
-      <Navbar isAuthenticated />
-      <div className="container py-8 space-y-8 max-w-4xl">
+    <div className="min-h-screen gradient-navy relative">
+      {/* Galaxy Background */}
+      <div className="fixed inset-0 z-0">
+        <Galaxy 
+          transparent={true}
+          mouseInteraction={true}
+          hueShift={180}
+          density={0.7}
+          glowIntensity={0.25}
+          twinkleIntensity={0.5}
+          speed={0.6}
+        />
+      </div>
+      
+      {/* Content */}
+      <div className="relative z-10">
+        <Navbar isAuthenticated />
+        <div className="container py-8 space-y-8 max-w-4xl">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <Flame className="w-8 h-8 text-primary" />
@@ -214,6 +230,7 @@ export default function FIREPlannerPage() {
         <p className="text-xs text-muted-foreground text-center">
           Projections use equity CAGR 12%, debt 7%, gold 8%, inflation 6%. Consult a SEBI-registered advisor for personalized advice.
         </p>
+        </div>
       </div>
     </div>
   );
