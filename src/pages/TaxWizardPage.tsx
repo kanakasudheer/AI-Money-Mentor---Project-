@@ -31,65 +31,88 @@ export default function TaxWizardPage() {
 
   const analyze = async () => {
     setLoading(true);
-    const gross = (parseFloat(salary.basic) || 0) + (parseFloat(salary.hra) || 0) + (parseFloat(salary.lta) || 0) + (parseFloat(salary.special) || 0);
-    const basicAnnual = (parseFloat(salary.basic) || 0) * 12;
-    const sec80c = parseFloat(deductions.sec80c) || 0;
-    const sec80d = parseFloat(deductions.sec80d) || 0;
-    const sec80ccd = parseFloat(deductions.sec80ccd) || 0;
-    const hraRent = parseFloat(deductions.hra_rent) || 0;
-    const homeLoan = parseFloat(deductions.home_loan) || 0;
-
-    const annualGross = gross * 12;
-
-    // Old regime calculation
-    const standardDeductionOld = 50000;
-    const hraExempt = Math.min((parseFloat(salary.hra) || 0) * 12, hraRent * 12 - 0.1 * basicAnnual, 0.5 * basicAnnual);
-    const totalDeductionsOld = standardDeductionOld + Math.max(hraExempt, 0) + Math.min(sec80c, 150000) + Math.min(sec80d, 75000) + Math.min(sec80ccd, 50000) + Math.min(homeLoan, 200000);
-    const taxableOld = Math.max(annualGross - totalDeductionsOld, 0);
-
-    // Old regime slabs
-    let taxOld = 0;
-    if (taxableOld > 1000000) taxOld += (taxableOld - 1000000) * 0.3;
-    if (taxableOld > 500000) taxOld += Math.min(taxableOld - 500000, 500000) * 0.2;
-    if (taxableOld > 250000) taxOld += Math.min(taxableOld - 250000, 250000) * 0.05;
-    taxOld *= 1.04; // cess
-
-    // New regime (FY 2025-26)
-    const standardDeductionNew = 75000;
-    const taxableNew = Math.max(annualGross - standardDeductionNew, 0);
-    let taxNew = 0;
-    const slabs = [400000, 400000, 400000, 400000, 400000];
-    const rates = [0.05, 0.10, 0.15, 0.20, 0.30];
-    let remaining = Math.max(taxableNew - 400000, 0);
-    for (let i = 0; i < slabs.length && remaining > 0; i++) {
-      const taxable = Math.min(remaining, slabs[i]);
-      taxNew += taxable * rates[i];
-      remaining -= taxable;
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-mentor", {
+        body: {
+          module: "tax-wizard",
+          profile,
+          inputs: {
+            basic: parseFloat(salary.basic) || 0,
+            hra: parseFloat(salary.hra) || 0,
+            lta: parseFloat(salary.lta) || 0,
+            special: parseFloat(salary.special) || 0,
+            sec80c: parseFloat(deductions.sec80c) || 0,
+            sec80d: parseFloat(deductions.sec80d) || 0,
+            sec80ccd: parseFloat(deductions.sec80ccd) || 0,
+            rent: parseFloat(deductions.hra_rent) || 0,
+            homeLoan: parseFloat(deductions.home_loan) || 0,
+          },
+        },
+      });
+      if (error) throw error;
+      // Map AI response to component's expected format
+      setResult({
+        punchline: data.recommendation || `You can save ${formatINR(data.savings || 0)} by optimizing your tax regime.`,
+        comparison: {
+          old: { taxable: data.old_regime?.taxable_income || 0, tax: data.old_regime?.tax || 0, deductions: data.old_regime?.deductions_used || 0 },
+          new: { taxable: data.new_regime?.taxable_income || 0, tax: data.new_regime?.tax || 0, deductions: 75000 },
+        },
+        better_regime: (data.old_regime?.tax || 0) < (data.new_regime?.tax || 0) ? "Old" : "New",
+        missed_deductions: (data.missing_deductions || []).map((d: any) => ({
+          title: `${d.section}: ${d.description}`,
+          description: `Max limit: ${formatINR(d.max_limit)}. Potential saving: ${formatINR(d.potential_saving)}`,
+          priority: "high" as const,
+        })),
+        recommendation: data.recommendation || "",
+        tax_saving_investments: data.tax_saving_investments || [],
+      });
+    } catch {
+      // Fallback local calculation
+      const gross = (parseFloat(salary.basic) || 0) + (parseFloat(salary.hra) || 0) + (parseFloat(salary.lta) || 0) + (parseFloat(salary.special) || 0);
+      const basicAnnual = (parseFloat(salary.basic) || 0) * 12;
+      const sec80c = parseFloat(deductions.sec80c) || 0;
+      const sec80d = parseFloat(deductions.sec80d) || 0;
+      const sec80ccd = parseFloat(deductions.sec80ccd) || 0;
+      const hraRent = parseFloat(deductions.hra_rent) || 0;
+      const homeLoan = parseFloat(deductions.home_loan) || 0;
+      const annualGross = gross * 12;
+      const standardDeductionOld = 50000;
+      const hraExempt = Math.min((parseFloat(salary.hra) || 0) * 12, hraRent * 12 - 0.1 * basicAnnual, 0.5 * basicAnnual);
+      const totalDeductionsOld = standardDeductionOld + Math.max(hraExempt, 0) + Math.min(sec80c, 150000) + Math.min(sec80d, 75000) + Math.min(sec80ccd, 50000) + Math.min(homeLoan, 200000);
+      const taxableOld = Math.max(annualGross - totalDeductionsOld, 0);
+      let taxOld = 0;
+      if (taxableOld > 1000000) taxOld += (taxableOld - 1000000) * 0.3;
+      if (taxableOld > 500000) taxOld += Math.min(taxableOld - 500000, 500000) * 0.2;
+      if (taxableOld > 250000) taxOld += Math.min(taxableOld - 250000, 250000) * 0.05;
+      taxOld *= 1.04;
+      const taxableNew = Math.max(annualGross - 75000, 0);
+      let taxNew = 0;
+      const slabs = [400000, 400000, 400000, 400000, 400000];
+      const rates = [0.05, 0.10, 0.15, 0.20, 0.30];
+      let remaining = Math.max(taxableNew - 400000, 0);
+      for (let i = 0; i < slabs.length && remaining > 0; i++) {
+        const taxable = Math.min(remaining, slabs[i]);
+        taxNew += taxable * rates[i];
+        remaining -= taxable;
+      }
+      taxNew *= 1.04;
+      const savings = Math.abs(taxOld - taxNew);
+      const betterRegime = taxOld < taxNew ? "Old" : "New";
+      setResult({
+        punchline: `You can save ${formatINR(Math.round(savings))} by choosing the ${betterRegime} regime for FY 2025-26.`,
+        comparison: {
+          old: { taxable: Math.round(taxableOld), tax: Math.round(taxOld), deductions: Math.round(totalDeductionsOld) },
+          new: { taxable: Math.round(taxableNew), tax: Math.round(taxNew), deductions: 75000 },
+        },
+        better_regime: betterRegime,
+        missed_deductions: [],
+        recommendation: betterRegime === "Old"
+          ? "The Old Regime works better because your deductions significantly reduce taxable income."
+          : "The New Regime is more beneficial since your deductions don't offset the lower slab rates.",
+      });
+    } finally {
+      setLoading(false);
     }
-    taxNew *= 1.04;
-
-    const savings = Math.abs(taxOld - taxNew);
-    const betterRegime = taxOld < taxNew ? "Old" : "New";
-
-    const missedDeductions = [];
-    if (sec80c < 150000) missedDeductions.push({ title: `Section 80C: Missing ₹${(150000 - sec80c).toLocaleString('en-IN')}`, description: "Invest in ELSS funds for tax saving + equity returns. Better than PPF for long-term wealth creation.", priority: "high" as const });
-    if (sec80ccd === 0) missedDeductions.push({ title: "Section 80CCD(1B): Missing ₹50,000 NPS deduction", description: "Extra ₹50K deduction beyond 80C. Saves ₹15,600 at 30% slab. Choose aggressive NPS allocation.", priority: "high" as const });
-    if (sec80d < 25000) missedDeductions.push({ title: `Section 80D: Health insurance premium`, description: "Claim up to ₹25,000 for self + ₹50,000 for senior citizen parents.", priority: "medium" as const });
-    if (homeLoan === 0) missedDeductions.push({ title: "Section 24(b): Home loan interest", description: "Up to ₹2L deduction on home loan interest. Applicable only in old regime.", priority: "low" as const });
-
-    setResult({
-      punchline: `You can save ${formatINR(Math.round(savings))} by choosing the ${betterRegime} regime for FY 2025-26.`,
-      comparison: {
-        old: { taxable: Math.round(taxableOld), tax: Math.round(taxOld), deductions: Math.round(totalDeductionsOld) },
-        new: { taxable: Math.round(taxableNew), tax: Math.round(taxNew), deductions: standardDeductionNew },
-      },
-      better_regime: betterRegime,
-      missed_deductions: missedDeductions,
-      recommendation: betterRegime === "Old"
-        ? "The Old Regime works better for you because your deductions significantly reduce taxable income. Maximize 80C and 80CCD(1B) for maximum benefit."
-        : "The New Regime is more beneficial since your deductions don't offset the lower slab rates. Focus on investing the tax saved into growth assets.",
-    });
-    setLoading(false);
   };
 
   return (
