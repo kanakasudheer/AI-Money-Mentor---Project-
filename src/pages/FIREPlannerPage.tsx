@@ -114,11 +114,11 @@ export default function FIREPlannerPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-foreground">Target Retirement Age</Label>
-              <Input type="number" value={retirementAge} onChange={e => setRetirementAge(e.target.value)} className="bg-secondary border-border mt-1" />
+              <Input type="number" value={retirementAge} onChange={e => setRetirementAge(e.target.value)} placeholder="45" className="bg-secondary border-border mt-1" />
             </div>
             <div>
               <Label className="text-foreground">Monthly Expenses at Retirement (₹)</Label>
-              <Input type="number" value={monthlyExpenseGoal} onChange={e => setMonthlyExpenseGoal(e.target.value)} className="bg-secondary border-border mt-1" />
+              <Input type="number" value={monthlyExpenseGoal} onChange={e => setMonthlyExpenseGoal(e.target.value)} placeholder="75000" className="bg-secondary border-border mt-1" />
             </div>
           </div>
           <Button onClick={calculateFIRE} disabled={loading} className="gradient-gold text-primary-foreground font-medium">
