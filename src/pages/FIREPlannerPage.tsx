@@ -118,7 +118,7 @@ export default function FIREPlannerPage() {
             </div>
             <div>
               <Label className="text-foreground">Monthly Expenses at Retirement (₹)</Label>
-              <Input type="number" value={monthlyExpenseGoal} onChange={e => setMonthlyExpenseGoal(e.target.value)} className="bg-secondary border-border mt-1" />
+              <Input type="number" value={monthlyExpenseGoal} onChange={e => setMonthlyExpenseGoal(e.target.value)} placeholder="75000" className="bg-secondary border-border mt-1" />
             </div>
           </div>
           <Button onClick={calculateFIRE} disabled={loading} className="gradient-gold text-primary-foreground font-medium">
