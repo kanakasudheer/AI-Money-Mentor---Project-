@@ -30,36 +30,52 @@ export default function CouplesPlannerPage() {
 
   const analyze = async () => {
     setLoading(true);
-    const p2Income = parseFloat(partner.income) || 0;
-    const combinedIncome = (profile?.monthly_income || 0) + p2Income;
-    const combinedExpenses = (profile?.monthly_expenses || 0) + (parseFloat(partner.expenses) || 0);
-    const combinedNetWorth = (profile?.equity || 0) + (profile?.debt_investments || 0) + (profile?.gold || 0) + (profile?.pf_ppf || 0) + (profile?.nps || 0)
-      + (parseFloat(partner.equity) || 0) + (parseFloat(partner.debt_inv) || 0) + (parseFloat(partner.pf) || 0) + (parseFloat(partner.nps) || 0);
-    const savingsRate = combinedIncome > 0 ? Math.round(((combinedIncome - combinedExpenses) / combinedIncome) * 100) : 0;
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-mentor", {
+        body: {
+          module: "couples-planner",
+          profile,
+          inputs: {
+            name: partner.name,
+            income: parseFloat(partner.income) || 0,
+            expenses: parseFloat(partner.expenses) || 0,
+            investments: (parseFloat(partner.equity) || 0) + (parseFloat(partner.debt_inv) || 0) + (parseFloat(partner.pf) || 0) + (parseFloat(partner.nps) || 0),
+            rent: parseFloat(partner.rent) || 0,
+            insurance_health: parseFloat(partner.insurance_health) || 0,
+          },
+        },
+      });
+      if (error) throw error;
+      setResult(data);
+    } catch {
+      // Fallback
+      const p2Income = parseFloat(partner.income) || 0;
+      const combinedIncome = (profile?.monthly_income || 0) + p2Income;
+      const combinedExpenses = (profile?.monthly_expenses || 0) + (parseFloat(partner.expenses) || 0);
+      const combinedNetWorth = (profile?.equity || 0) + (profile?.debt_investments || 0) + (profile?.gold || 0) + (profile?.pf_ppf || 0) + (profile?.nps || 0)
+        + (parseFloat(partner.equity) || 0) + (parseFloat(partner.debt_inv) || 0) + (parseFloat(partner.pf) || 0) + (parseFloat(partner.nps) || 0);
+      const savingsRate = combinedIncome > 0 ? Math.round(((combinedIncome - combinedExpenses) / combinedIncome) * 100) : 0;
+      const hraClaimer = (profile?.monthly_income || 0) >= p2Income ? profile?.name || "Partner 1" : partner.name || "Partner 2";
+      const rent = parseFloat(partner.rent) || 0;
 
-    // Determine who should claim HRA
-    const p1Income = profile?.monthly_income || 0;
-    const rent = parseFloat(partner.rent) || 0;
-    const hraClaimer = p1Income >= p2Income ? profile?.name || "Partner 1" : partner.name || "Partner 2";
-
-    setResult({
-      combined_net_worth: combinedNetWorth,
-      savings_rate: savingsRate,
-      combined_income: combinedIncome,
-      hra: { claimer: hraClaimer, reason: `The higher earner (${hraClaimer}) should claim HRA as it provides more tax benefit at a higher tax slab. Monthly rent of ${formatINR(rent)} can save approximately ${formatINR(Math.round(rent * 12 * 0.3))} in taxes annually.` },
-      sip_split: `Split SIPs across both PAN cards: ${profile?.name || "Partner 1"} invests in ELSS + large-cap index funds. ${partner.name || "Partner 2"} focuses on mid-cap + international funds for diversification.`,
-      nps: `Both should invest ₹50,000/year in NPS under 80CCD(1B) for combined tax saving of ₹31,200 (at 30% slab). Choose aggressive allocation (75% equity) if both are under 40.`,
-      insurance: (parseFloat(partner.insurance_health) || 0) > 0
-        ? "Individual health policies are better if both have employer coverage. Consider a top-up plan of ₹25L for catastrophic coverage."
-        : "Get a ₹10L family floater immediately. Add a ₹25L super top-up for comprehensive coverage at minimal extra cost.",
-      action_plan: [
-        { title: "Open joint emergency fund", description: `Target: ${formatINR(combinedExpenses * 6)} in a liquid fund. Both contribute proportionally.`, priority: "high" as const },
-        { title: "Align investment goals", description: "Create shared goals (home, child's education) and track net worth together monthly.", priority: "medium" as const },
-        { title: "Optimize tax across both incomes", description: `Combined tax saving potential: ~${formatINR(Math.round((150000 + 50000 + 25000) * 0.3 * 2))} by maxing 80C, 80CCD, and 80D for both.`, priority: "medium" as const },
-        { title: "Review nomination and will", description: "Update all investment nominations, write a simple will, and ensure both partners know all financial details.", priority: "low" as const },
-      ],
-    });
-    setLoading(false);
+      setResult({
+        combined_net_worth: combinedNetWorth,
+        savings_rate: savingsRate,
+        combined_income: combinedIncome,
+        hra: { claimer: hraClaimer, reason: `The higher earner (${hraClaimer}) should claim HRA. Monthly rent of ${formatINR(rent)} can save ~${formatINR(Math.round(rent * 12 * 0.3))}/year.` },
+        sip_split: `Split SIPs across both PAN cards for diversification and tax efficiency.`,
+        nps: `Both should invest ₹50,000/year in NPS under 80CCD(1B) for combined tax saving of ₹31,200.`,
+        insurance: "Get a ₹10L family floater and a ₹25L super top-up for comprehensive coverage.",
+        action_plan: [
+          { title: "Open joint emergency fund", description: `Target: ${formatINR(combinedExpenses * 6)} in a liquid fund.`, priority: "high" as const },
+          { title: "Align investment goals", description: "Create shared goals and track net worth together monthly.", priority: "medium" as const },
+          { title: "Optimize tax across both incomes", description: `Combined tax saving potential: ~${formatINR(Math.round((150000 + 50000 + 25000) * 0.3 * 2))}.`, priority: "medium" as const },
+          { title: "Review nomination and will", description: "Update nominations and write a simple will.", priority: "low" as const },
+        ],
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
