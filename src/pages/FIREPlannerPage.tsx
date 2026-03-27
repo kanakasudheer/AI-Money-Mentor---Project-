@@ -156,15 +156,15 @@ export default function FIREPlannerPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                 <div>
                   <p className="text-sm text-muted-foreground">FIRE Age</p>
-                  <p className="text-4xl font-heading font-bold text-primary">{result.fire_age}</p>
+                  <p className="text-4xl font-heading font-bold text-primary">{result?.fire_age || 45}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Corpus Needed</p>
-                  <p className="text-4xl font-heading font-bold text-foreground">{formatINR(result.corpus_needed)}</p>
+                  <p className="text-4xl font-heading font-bold text-foreground">{formatINR(result?.corpus_needed || 0)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Monthly SIP</p>
-                  <p className="text-4xl font-heading font-bold text-success">{formatINR(result.monthly_sip)}</p>
+                  <p className="text-4xl font-heading font-bold text-success">{formatINR(result?.monthly_sip || 0)}</p>
                 </div>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function FIREPlannerPage() {
             <div className="glass-card rounded-xl p-6">
               <h2 className="font-heading text-lg font-semibold text-foreground mb-4">Asset Allocation by Decade</h2>
               <div className="space-y-4">
-                {result.allocation.map(a => (
+                {result?.allocation?.map(a => (
                   <div key={a.decade} className="space-y-2">
                     <p className="text-sm font-medium text-foreground">Age {a.decade}</p>
                     <div className="flex h-8 rounded-lg overflow-hidden">
@@ -196,7 +196,7 @@ export default function FIREPlannerPage() {
             <div>
               <h2 className="font-heading text-lg font-semibold text-foreground mb-4">Insurance Gap Analysis</h2>
               <div className="space-y-3">
-                {result.insurance_gaps.map((item, i) => (
+                {result?.insurance_gaps?.map((item, i) => (
                   <InsightCard key={i} title={item.title} description={item.description} priority={item.priority} />
                 ))}
               </div>
@@ -206,7 +206,7 @@ export default function FIREPlannerPage() {
             <div>
               <h2 className="font-heading text-lg font-semibold text-foreground mb-4">Tax-Saving Recommendations</h2>
               <div className="space-y-3">
-                {result.tax_moves.map((item, i) => (
+                {result?.tax_moves?.map((item, i) => (
                   <InsightCard key={i} title={item.title} description={item.description} priority={item.priority} />
                 ))}
               </div>
@@ -215,13 +215,13 @@ export default function FIREPlannerPage() {
             {/* Emergency Fund */}
             <div className="glass-card rounded-xl p-6">
               <h2 className="font-heading text-lg font-semibold text-foreground mb-2">Emergency Fund Target</h2>
-              <p className="text-3xl font-heading font-bold text-primary">{formatINR(result.emergency_target)}</p>
+              <p className="text-3xl font-heading font-bold text-primary">{formatINR(result?.emergency_target || 0)}</p>
               <p className="text-sm text-muted-foreground mt-1">6 months of expenses in a liquid fund</p>
             </div>
 
             {/* Motivational */}
             <div className="glass-card rounded-xl p-6 border-primary/30 text-center">
-              <p className="text-foreground leading-relaxed italic">"{result.motivational}"</p>
+              <p className="text-foreground leading-relaxed italic">"{result?.motivational || 'Your journey to financial freedom starts today!'}"</p>
               <p className="text-sm text-primary font-medium mt-2">— Artha, Your AI Money Mentor</p>
             </div>
           </>
