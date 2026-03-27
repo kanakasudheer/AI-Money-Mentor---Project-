@@ -55,6 +55,8 @@ class X {
   #animationState = { elapsed: 0, delta: 0 };
   #isAnimating: boolean = false;
   #isVisible: boolean = false;
+  #onResizeHandler?: () => void;
+  #onVisibilityChangeHandler?: () => void;
 
   canvas!: HTMLCanvasElement;
   camera!: PerspectiveCamera;
@@ -123,7 +125,8 @@ class X {
 
   #initObservers() {
     if (!(this.#config.size instanceof Object)) {
-      window.addEventListener('resize', this.#onResize.bind(this));
+      this.#onResizeHandler = this.#onResize.bind(this);
+      window.addEventListener('resize', this.#onResizeHandler);
       if (this.#config.size === 'parent' && this.canvas.parentNode) {
         this.#resizeObserver = new ResizeObserver(this.#onResize.bind(this));
         this.#resizeObserver.observe(this.canvas.parentNode as Element);
@@ -135,7 +138,8 @@ class X {
       threshold: 0
     });
     this.#intersectionObserver.observe(this.canvas);
-    document.addEventListener('visibilitychange', this.#onVisibilityChange.bind(this));
+    this.#onVisibilityChangeHandler = this.#onVisibilityChange.bind(this);
+    document.addEventListener('visibilitychange', this.#onVisibilityChangeHandler);
   }
 
   #onResize() {
@@ -282,10 +286,14 @@ class X {
   }
 
   #onResizeCleanup() {
-    window.removeEventListener('resize', this.#onResize.bind(this));
+    if (this.#onResizeHandler) {
+      window.removeEventListener('resize', this.#onResizeHandler);
+    }
     this.#resizeObserver?.disconnect();
     this.#intersectionObserver?.disconnect();
-    document.removeEventListener('visibilitychange', this.#onVisibilityChange.bind(this));
+    if (this.#onVisibilityChangeHandler) {
+      document.removeEventListener('visibilitychange', this.#onVisibilityChangeHandler);
+    }
   }
 }
 
@@ -868,10 +876,10 @@ const Ballpit: React.FC<BallpitProps> = ({ className = '', followCursor = true, 
     return () => {
       if (spheresInstanceRef.current) {
         spheresInstanceRef.current.dispose();
+        spheresInstanceRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [followCursor]);
 
   return <canvas className={className} ref={canvasRef} style={{ width: '100%', height: '100%' }} />;
 };

@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,25 +20,27 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/onboarding" element={<OnboardingPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/money-health" element={<MoneyHealthPage />} />
-          <Route path="/fire-planner" element={<FIREPlannerPage />} />
-          <Route path="/life-events" element={<LifeEventsPage />} />
-          <Route path="/tax-wizard" element={<TaxWizardPage />} />
-          <Route path="/couples-planner" element={<CouplesPlannerPage />} />
-          <Route path="/portfolio-xray" element={<PortfolioXRayPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/money-health" element={<MoneyHealthPage />} />
+            <Route path="/fire-planner" element={<FIREPlannerPage />} />
+            <Route path="/life-events" element={<LifeEventsPage />} />
+            <Route path="/tax-wizard" element={<TaxWizardPage />} />
+            <Route path="/couples-planner" element={<CouplesPlannerPage />} />
+            <Route path="/portfolio-xray" element={<PortfolioXRayPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
