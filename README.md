@@ -1,7 +1,7 @@
-# AI Money Mentor - Project
+# AI Money Mentor - Project(Website:https://ai-money-mentor-project.vercel.app/
+)
 
 A comprehensive financial planning and money management application designed to help users achieve financial independence and make informed financial decisions.
-Website:https://ai-money-mentor-project.vercel.app/
 
 ## 🌟 Features
 
