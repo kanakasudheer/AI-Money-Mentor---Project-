@@ -145,7 +145,7 @@ export default function LandingPage() {
       <footer className="border-t border-border py-8">
         <div className="container text-center text-sm text-muted-foreground">
           <p>AI Money Mentor is for educational purposes. Always consult a SEBI-registered advisor for personalized advice.</p>
-          <p className="mt-2">© 2025 AI Money Mentor. All rights reserved.</p>
+          <p className="mt-2">© 2026 AI Money Mentor. All rights reserved.</p>
         </div>
       </footer>
       </div>
